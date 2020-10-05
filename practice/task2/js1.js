@@ -58,9 +58,10 @@ const find = (role, phonebook) => {
     for(const entry of phonebook){
 	    if(entry.role == role){
 		    answer.push({employee: entry.name});
-		    return answer;}
+		    }
 
 }
+return answer;
 }
 
 /*
@@ -80,8 +81,22 @@ const find = (role, phonebook) => {
 */
 const roles = (book) => {
     let answer = {};
-    // TODO
-    return answer;
+	let uniqueRoles = [];
+	for(const job of book){
+		if(!(uniqueRoles.includes(job.role))){
+			console.log(job.role);
+			uniqueRoles.push(job.role);
+		}
+	}
+	for(let i = 0; i < uniqueRoles.length; i++){
+		let jobs = [];
+		for(const j of book){
+			if(uniqueRoles[i] == j.role){
+				jobs.push(j.name);
+			}
+		}answer[uniqueRoles[i]] = jobs;
+	}
+	return answer;
 }
 
 let answer = getNumber('Clara', phonebook);
@@ -94,9 +109,9 @@ console.log("GETNUMBER PASSED ALL TESTS\n");
 
 answer = find("Developer", phonebook);
 console.log(answer);
-assert.equal(answer.filter(function(item){ if (item.employee == 'Ann') return item})[0].employee, 'Ann')
-assert.equal(answer.filter(function(item){ if (item.employee == 'Clara') return item})[0].employee, 'Clara')
-assert.equal(answer.filter(function(item){ if (item.employee == 'Fiona') return item})[0].employee, 'Fiona')
+assert.equal(answer.filter(function(item){ if (item.employee == 'Ann') return item})[0].employee, 'Ann');
+assert.equal(answer.filter(function(item){ if (item.employee == 'Clara') return item})[0].employee, 'Clara');
+assert.equal(answer.filter(function(item){ if (item.employee == 'Fiona') return item})[0].employee, 'Fiona');
 console.log("FIND FUNCTION PASSED TESTS\n");
 
 answer = roles(phonebook);
