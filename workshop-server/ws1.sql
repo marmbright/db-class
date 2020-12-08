@@ -4,8 +4,8 @@ CREATE DATABASE workshop;
 \c workshop
 CREATE TABLE workshops (
 	        id SERIAL PRIMARY KEY,
-		        workshop TEXT NOT NULL,
-			        attendee TEXT
-			);
-			GRANT SELECT, INSERT ON workshops TO marmbright;
-			GRANT USAGE, SELECT ON SEQUENCE workshops_id_seq TO marmbright;
+		workshop TEXT NOT NULL,
+	        attendee TEXT
+	);
+	GRANT SELECT, INSERT ON workshops TO marmbrig;
+	GRANT USAGE, SELECT ON SEQUENCE workshops_id_seq TO marmbrig;
