@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.set("port", 8080);
+app.set("port", 3000);
 
 app.use(bodyParser.json({ type: "application/json" }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,26 +30,49 @@ app.get('/hello', (req, res) => {
 app.post("/api", async(req,res) => {
 	const workshop = req.body.workshop;
         const attendee = req.body.attendee;
-	try{
-		
-		const template = "SELECT * FROM workshops WHERE workshop = $1 AND attendee = $2";
-		const check = await pool.query(template, [workshop, attendee]);
-		if(check.rowCount != 0){
-		res.json({status: "attendee already in database"});
-		}else{
-			const template1 = "INSERT INTO workshops (workshop, attendee) VALUES ($1,$2)";
-			const response = await pool.query(template1, [workshop, attendee]);
-			res.json({status: "added"});
+	if (workshop && attendee){
+		try{
+			const template = "SELECT * FROM workshops WHERE workshop = $1 AND attendee = $2";
+			const check = await pool.query(template, [workshop, attendee]);
+			if(check.rowCount != 0){
+			res.json({status: "attendee already in database"});
+			}else{
+				const template1 = "INSERT INTO workshops (workshop, attendee) VALUES ($1,$2)";
+				const response = await pool.query(template1, [workshop, attendee]);
+				res.json({status: "added"});
+			}
+		}catch (err){
+			console.log(err);
 		}
-	}catch (err){
-		console.log(err);
-	}
+		}
+
 });
 
 app.get("/api", async(req, res) => {
-	const template = "SELECT * FROM workshops";
-	const check = await pool.query(template, [workshop]);
-	res.json({status: "complete", result: {workshop: workshop}});
+	//const template = "SELECT * FROM workshops";
+	//const check = await pool.query(template, [workshop]);
+	let searchTerm = req.query.workshop;
+	//res.json({status: "complete", result: {workshop: workshop}});
+	try{
+		if(searchTerm) {
+			const template = "SELECT attendee FROM workshops WHERE workshops = $1";
+			const dbresponse = await pool.query(template, [searchTerm]);
+			console.log(dbresponse.rows);
+			if(dbresponse.rowCount != 0){
+				const result = dbresponse.rows.map((row) => {return row.attendee});
+				res.json({attendees: result});
+			}else{
+				res.json({error: "workshop not found"});
+		}}else{
+			const template1 = "SELECT DISTINCT workshop FROM workshops";
+			const dbresponse = await pool.query(template1);
+			const result = dbresponse.rows.map((row) => {return row.workshop});
+			res.jason({workshops: result});
+		}
+
+	}catch (err){
+		console.log(err);
+	}
 });
 
 app.listen(app.get("port"), () => {
